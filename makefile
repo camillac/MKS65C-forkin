@@ -2,7 +2,7 @@ all: fork_proc.o
 	gcc fork_proc.o
 
 clean:
-	rm -f *~ *.gch* a.out *.o *#*
+	rm -f *~ *.gch* a.out *.o *.txt *#*
 
 run:
 	./a.out
