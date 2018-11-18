@@ -6,14 +6,13 @@
 #include <errno.h>
 #include <fcntl.h>
 
+
 int main(){
   printf("PARENT PID: %d\n", getpid());
+
+  int status;
   pid_t f1 = fork();
   pid_t f2;
-  int * fd = calloc(1, sizeof(int));
-  int file_num = open("time.txt", O_CREAT); // create time.txt
-  close(file_num);
-
   // if parent, create second child
   if (!f1) {
     f2 = fork();
@@ -25,27 +24,17 @@ int main(){
     printf("\tchild pid: %d\ttime: %d\n", getpid(), t);
     sleep(t);
 
-    // write time slept into time.txt
-    file_num = open("time.txt", O_WRONLY);
-    write(file_num, &t, sizeof(int));
-    close(file_num);
-
     printf("\tCHILD %d IS DONE\n", getpid());
-    exit(0);
+
+    return t;
   }
   // if parent
   else {
     // wait until a child process is done
-    int stat;
-    int cpid = wait(&stat);
-
-    // read time slept from time.txt
-    file_num = open("time.txt", O_RDONLY);
-    read(file_num, fd, sizeof(int));
-
-    printf("CHILD %d SLEPT FOR %d SECONDS\n", cpid, fd[0]);
+    int cpid = wait(&status);
+    int slept = WEXITSTATUS(status);
+    printf("CHILD %d SLEPT FOR %d SECONDS\n", cpid, slept);
     printf("PARENT IS DONE!!!!!!!!!\n");
-    free(fd);
   }
   return 0;
 
